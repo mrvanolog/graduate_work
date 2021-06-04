@@ -15,11 +15,11 @@ path_genre = path_data.joinpath('genre.txt')
 path_person_film_work = path_data.joinpath('person_film_work.txt')
 path_person = path_data.joinpath('person.txt')
 
-path_sql_movies = Path().cwd().joinpath('init_movies.sql')
+path_sql_movies = Path().cwd().joinpath('init_db_movies.sql')
 with path_sql_movies.open('r') as f:
     sql_init_movies = f.read()
 
-path_sql_users = Path().cwd().joinpath('init_users.sql')
+path_sql_users = Path().cwd().joinpath('init_db_users.sql')
 with path_sql_users.open('r') as f:
     sql_init_users = f.read()
 
