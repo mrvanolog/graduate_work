@@ -1,0 +1,6 @@
+version: '3.8'
+
+services:
+  postgres_init:
+    build: ./db/postgres
+    container_name: postgres_init
