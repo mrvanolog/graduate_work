@@ -2,10 +2,10 @@ import os
 from pathlib import Path
 import psycopg2
 
-POSTGRES_HOST = os.environ.get('POSTGRES_HOST', default='user_admin')
-POSTGRES_PORT = os.environ.get('POSTGRES_PORT', default='qwerty123')
-POSTGRES_USER = os.environ.get('POSTGRES_USER', default='rc1b-9g35diheb1pr3mvu.mdb.yandexcloud.net')
-POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', default='6432')
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST', default='rc1b-9g35diheb1pr3mvu.mdb.yandexcloud.net')
+POSTGRES_PORT = os.environ.get('POSTGRES_PORT', default='6432')
+POSTGRES_USER = os.environ.get('POSTGRES_USER', default='user_admin')
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', default='qwerty123')
 
 path_data = Path().cwd().joinpath('data')
 
@@ -25,9 +25,9 @@ path_sql_users = Path().cwd().joinpath('init_db_users.sql')
 with path_sql_users.open('r') as f:
     sql_init_users = f.read()
 
-path_sql_users = Path().cwd().joinpath('init_db_ugc.sql')
-with path_sql_users.open('r') as f:
-    sql_init_users = f.read()
+path_sql_ugc = Path().cwd().joinpath('init_db_ugc.sql')
+with path_sql_ugc.open('r') as f:
+    sql_init_ugc = f.read()
 
 
 def init_movies():
@@ -102,7 +102,7 @@ def init_ugc():
     """)
 
     with conn.cursor() as cur:
-        cur.execute(sql_init_users)
+        cur.execute(sql_init_ugc)
 
         with path_ratings.open('r') as f:
             cur.copy_from(f, 'user_content.ratings')
@@ -114,7 +114,7 @@ def init_ugc():
 
 
 def main():
-    # init_movies()
+    init_movies()
     init_users()
     init_ugc()
 
