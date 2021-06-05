@@ -2,10 +2,10 @@ import os
 from pathlib import Path
 import psycopg2
 
-POSTGRES_HOST = os.environ.get('POSTGRES_HOST')
-POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
-POSTGRES_USER = os.environ.get('POSTGRES_USER')
-POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST', default='user_admin')
+POSTGRES_PORT = os.environ.get('POSTGRES_PORT', default='qwerty123')
+POSTGRES_USER = os.environ.get('POSTGRES_USER', default='rc1b-9g35diheb1pr3mvu.mdb.yandexcloud.net')
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', default='6432')
 
 path_data = Path().cwd().joinpath('data')
 
@@ -114,7 +114,7 @@ def init_ugc():
 
 
 def main():
-    init_movies()
+    # init_movies()
     init_users()
     init_ugc()
 
