@@ -1,8 +1,7 @@
 FROM python:3.9
 ENV POSTGRES_USER=user_admin \
     POSTGRES_PASSWORD=qwerty123 \
-    POSTGRES_DB=movies \
-    POSTGRES_HOST=rc1a-80npisto5z5x0n4n.mdb.yandexcloud.net \
+    POSTGRES_HOST=rc1b-9g35diheb1pr3mvu.mdb.yandexcloud.net \
     POSTGRES_PORT=6432
 # install certificate for yandex cloud
 RUN mkdir -p ~/.postgresql && \
