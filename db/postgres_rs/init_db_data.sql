@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS rs_data.ratings (
 );
 
 
-CREATE TABLE IF NOT EXISTS content.film_work (
+CREATE TABLE IF NOT EXISTS rs_data.movies (
     id uuid NOT NULL,
     title text NOT NULL,
     rating double precision,
