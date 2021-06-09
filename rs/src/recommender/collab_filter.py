@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.spatial.distance import cosine
 
-from services.recommender import Recommender
+from recommender.recommender import Recommender
 
 
 class CollabFilterRecommender(Recommender):
