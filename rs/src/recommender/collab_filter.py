@@ -70,7 +70,7 @@ class CollabFilterRecommender(Recommender):
             movie_ids.append(key)
             distances.append(cosine(movie_vector[movie_id], movie_vector[key]))
 
-        best_indexes = np.argsort(distances)[:10]
+        best_indexes = np.argsort(distances)
         best_movies = [movie_ids[i] for i in best_indexes]
 
         return best_movies
