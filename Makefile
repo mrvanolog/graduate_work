@@ -35,17 +35,15 @@ run build-n-run:
 	ETL_IMAGE=${ETL_IMAGE} \
 	ASYNC_API_IMAGE=${ASYNC_API_IMAGE} \
 	ES_INITIALIZER_IMAGE=${ES_INITIALIZER_IMAGE} \
+	RS_IMAGE=${RS_IMAGE} \
 	$(RUN_DOCKER)
 
 
 upload-etl:
 	docker push ${ETL_IMAGE}
 
-upload-rs:
-    docker push ${RS_IMAGE}
-
 sync-remote:
- 	rsync -r remote/buffer/ platondmitriev@84.252.143.15:/home/platondmitriev/srv
+	rsync -r remote/buffer/ platondmitriev@84.252.143.15:/home/platondmitriev/srv
 
 stop:
 	docker stop $(shell docker ps -f network=etl_net -aq)
