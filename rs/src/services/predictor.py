@@ -1,6 +1,6 @@
 from typing import List
 import pandas as pd
-import psycopg2
+import psycopg2.extras
 
 from conf.settings import (POSTGRES_HOST, POSTGRES_PASSWORD, POSTGRES_PORT,
                            POSTGRES_USER, columns_movies, columns_ratings,
@@ -14,9 +14,9 @@ from rs.src.conf.settings import POSTGRES_DATA_DB, POSTGRES_PREDICTIONS_DB
 
 
 class Predictor():
-    def __init__(self, conn_data: psycopg2.connection, conn_predictions: psycopg2.connection):
-        self.conn_data: psycopg2.connection = conn_data
-        self.conn_predictions: psycopg2.connection = conn_predictions
+    def __init__(self, conn_data: psycopg2._connect, conn_predictions: psycopg2._connect):
+        self.conn_data: psycopg2._connect = conn_data
+        self.conn_predictions: psycopg2._connect = conn_predictions
 
         self.ratings: pd.DataFrame = self._get_ratings_data()
         self.movies: pd.DataFrame = self._get_movies_data()
@@ -62,7 +62,7 @@ class Predictor():
             cur.execute(sql_delete_users)
 
             # add new predictions
-            cur.execute(sql_insert_users, recommendations)
+            psycopg2.extras.execute_values(cur, sql_insert_users, recommendations)
 
         self.conn_predictions.commit()
 
@@ -82,7 +82,7 @@ class Predictor():
             cur.execute(sql_delete_movies)
 
             # add new predictions
-            cur.execute(sql_insert_movies, recommendations)
+            psycopg2.extras.execute_values(cur, sql_insert_movies, recommendations)
 
         self.conn_predictions.commit()
 
