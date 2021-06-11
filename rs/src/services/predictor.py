@@ -39,8 +39,8 @@ class Predictor():
 
         return pd.DataFrame(result, columns=columns_movies)
 
-    def unpersonalised_recommendation(self):
-        pass
+    def unpersonalised_recommendation(self) -> list:
+        return self.movies.sort_values('rating', ascending=False)['id'].values.tolist()
 
     def predict_for_users(self):
         recommendations: List[tuple] = []
