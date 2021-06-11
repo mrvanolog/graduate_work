@@ -1,0 +1,82 @@
+version: '3.7'
+
+services:
+  api:
+    image: ${ASYNC_API_IMAGE}
+    container_name: fast_api
+    environment:
+      ELASTICSEARCH_HOSTS: http://elastic:9200
+      REDIS_HOST: $REDIS_HOST
+      REDIS_PASSWORD: $REDIS_PASSWORD
+    depends_on:
+      - elasticsearch
+      - redis
+    restart: always
+    ports:
+      - 8000:8000
+
+  rs:
+    image: ${RS_IMAGE}
+    container_name: rs
+    environment:
+      POSTGRES_PASSWORD: $RS_POSTGRES_PASSWORD
+      POSTGRES_USER: $RS_POSTGRES_USER
+      POSTGRES_PREDICTIONS_DB: $RS_PREDICTIONS_POSTGRES_DB
+      POSTGRES_DATA_DB: $RS_DATA_POSTGRES_DB
+      POSTGRES_HOST: $RS_POSTGRES_HOST
+      POSTGRES_PORT: $RS_POSTGRES_PORT
+    restart: always
+    ports:
+      - 8080:8080
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    container_name: elastic
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    expose:
+      - 9200
+    restart: always
+
+  es_initializer:
+    image: ${ES_INITIALIZER_IMAGE}
+    container_name: es_initializer
+    build: ./conf/elastic
+    depends_on:
+      - elasticsearch
+
+  etl:
+    image: ${ETL_IMAGE}
+    container_name: etl
+    environment:
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_HOST: $POSTGRES_HOST
+      POSTGRES_PORT: $POSTGRES_PORT
+      ELASTICSEARCH_HOSTS: http://elastic:9200
+      REDIS_HOST: $REDIS_HOST
+      REDIS_PASSWORD: $REDIS_PASSWORD
+      TZ: $TIMEZONE
+    restart: always
+    depends_on:
+      - es_initializer
+      - postgres
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_server
+    ports:
+      - 8000:80    # use free port
+    depends_on:
+      - api
+    volumes:
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./conf/nginx/fast_api/fast_api.conf:/etc/nginx/conf.d/fast_api.conf:ro
+    restart: always
+
+volumes:
+  elasticsearch_data:
+  pg_data:

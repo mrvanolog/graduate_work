@@ -5,6 +5,8 @@ POSTGRES_HOST = os.environ.get('POSTGRES_HOST')
 POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
 POSTGRES_USER = os.environ.get('POSTGRES_USER')
 POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
+POSTGRES_PREDICTIONS_DB = os.environ.get('POSTGRES_PREDICTIONS_DB')
+POSTGRES_DATA_DB = os.environ.get('POSTGRES_DATA_DB')
 
 # SQL
 sql_ratings = 'SELECT movie_id, user_id, rating FROM rs_data.ratings'

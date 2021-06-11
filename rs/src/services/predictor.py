@@ -10,6 +10,8 @@ from conf.settings import (POSTGRES_HOST, POSTGRES_PASSWORD, POSTGRES_PORT,
 from recommender.collab_filter import CollabFilterRecommender
 from recommender.recommender import Recommender
 
+from rs.src.conf.settings import POSTGRES_DATA_DB, POSTGRES_PREDICTIONS_DB
+
 
 class Predictor():
     def __init__(self, conn_data: psycopg2.connection, conn_predictions: psycopg2.connection):
@@ -89,7 +91,7 @@ def get_predictor():
     conn_data = psycopg2.connect(f"""
         host={POSTGRES_HOST}
         port={POSTGRES_PORT}
-        dbname=rs-data
+        dbname={POSTGRES_DATA_DB}
         user={POSTGRES_USER}
         password={POSTGRES_PASSWORD}
         target_session_attrs=read-write
@@ -98,7 +100,7 @@ def get_predictor():
     conn_predictions = psycopg2.connect(f"""
         host={POSTGRES_HOST}
         port={POSTGRES_PORT}
-        dbname=rs-predictions
+        dbname={POSTGRES_PREDICTIONS_DB}
         user={POSTGRES_USER}
         password={POSTGRES_PASSWORD}
         target_session_attrs=read-write
