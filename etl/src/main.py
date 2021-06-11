@@ -70,15 +70,19 @@ def extract(conn_ugc: psycopg2._connect, conn_movies: psycopg2._connect) -> Dict
 
     date_filter = get_date_filter()
     with conn_ugc.cursor() as cur:
-        cur.execute(
-            f"SELECT DISTINCT {columns_ratings} FROM user_content.ratings WHERE created_at >= '{date_filter}'"
-        )
+        cur.execute(f"""
+            SELECT DISTINCT {columns_ratings}
+            FROM user_content.ratings
+            WHERE created_at >= '{date_filter}'
+        """)
         result['ratings'] = cur.fetchall()
 
     with conn_movies.cursor() as cur:
-        cur.execute(
-            f"SELECT DISTINCT {columns_movies} FROM content.film_work WHERE updated_at >= '{date_filter}'"
-        )
+        cur.execute(f"""
+            SELECT DISTINCT {columns_movies}
+            FROM content.film_work
+            WHERE updated_at >= '{date_filter}'
+        """)
         result['movies'] = cur.fetchall()
 
     return result
@@ -124,8 +128,9 @@ def main():
 
             raw_data = extract(conn_ugc, conn_movies)
             values = transform(raw_data)
-            if load(conn_rs_data, values):
-                logger.info(f'- время загрузки: {time.time() - time_now} с')
+            load(conn_rs_data, values)
+
+            logger.info(f'- время загрузки: {time.time() - time_now} с')
 
             time_start = time_now
 
