@@ -6,9 +6,7 @@ from typing import Dict, List
 import psycopg2.extras
 
 from conf.log import set_up_logging
-from conf.settings import (FLUSH_SECONDS, POSTGRES_HOST, POSTGRES_PASSWORD,
-                           POSTGRES_PORT, POSTGRES_USER, columns_movies,
-                           columns_ratings, sql_insert_movies, sql_insert_ratings)
+from conf import settings
 from conf.utils import backoff
 
 set_up_logging()
@@ -20,11 +18,11 @@ DATE_FILTER: datetime = datetime(2021, 6, 11, 17, 17)
 @backoff('ugc')
 def connect_ugc() -> psycopg2._connect:
     return psycopg2.connect(f"""
-        host={POSTGRES_HOST}
-        port={POSTGRES_PORT}
-        dbname=ugc
-        user={POSTGRES_USER}
-        password={POSTGRES_PASSWORD}
+        host={settings.POSTGRES_UGC_HOST}
+        port={settings.POSTGRES_UGC_PORT}
+        dbname={settings.POSTGRES_UGC_DB}
+        user={settings.POSTGRES_UGC_USER}
+        password={settings.POSTGRES_UGC_PASSWORD}
         target_session_attrs=read-write
         sslmode=verify-full
     """)
@@ -33,11 +31,11 @@ def connect_ugc() -> psycopg2._connect:
 @backoff('movies')
 def connect_movies() -> psycopg2._connect:
     return psycopg2.connect(f"""
-        host={POSTGRES_HOST}
-        port={POSTGRES_PORT}
-        dbname=movies
-        user={POSTGRES_USER}
-        password={POSTGRES_PASSWORD}
+        host={settings.POSTGRES_MOVIES_HOST}
+        port={settings.POSTGRES_MOVIES_PORT}
+        dbname={settings.POSTGRES_MOVIES_DB}
+        user={settings.POSTGRES_MOVIES_USER}
+        password={settings.POSTGRES_MOVIES_PASSWORD}
         target_session_attrs=read-write
         sslmode=verify-full
     """)
@@ -46,11 +44,11 @@ def connect_movies() -> psycopg2._connect:
 @backoff('rs-data')
 def connect_rs_data() -> psycopg2._connect:
     return psycopg2.connect(f"""
-        host={POSTGRES_HOST}
-        port={POSTGRES_PORT}
-        dbname=rs-data
-        user={POSTGRES_USER}
-        password={POSTGRES_PASSWORD}
+        host={settings.POSTGRES_DATA_HOST}
+        port={settings.POSTGRES_DATA_PORT}
+        dbname={settings.POSTGRES_DATA_DB}
+        user={settings.POSTGRES_DATA_USER}
+        password={settings.POSTGRES_DATA_PASSWORD}
         target_session_attrs=read-write
         sslmode=verify-full
     """)
@@ -71,7 +69,7 @@ def extract(conn_ugc: psycopg2._connect, conn_movies: psycopg2._connect) -> Dict
     date_filter = get_date_filter()
     with conn_ugc.cursor() as cur:
         cur.execute(f"""
-            SELECT DISTINCT {columns_ratings}
+            SELECT DISTINCT {settings.columns_ratings}
             FROM user_content.ratings
             WHERE created_at >= '{date_filter}'
         """)
@@ -79,7 +77,7 @@ def extract(conn_ugc: psycopg2._connect, conn_movies: psycopg2._connect) -> Dict
 
     with conn_movies.cursor() as cur:
         cur.execute(f"""
-            SELECT DISTINCT {columns_movies}
+            SELECT DISTINCT {settings.columns_movies}
             FROM content.film_work
             WHERE updated_at >= '{date_filter}'
         """)
@@ -106,8 +104,8 @@ def transform(data: Dict[str, List[tuple]]) -> Dict[str, List[tuple]]:
 
 def load(conn_rs_data: psycopg2._connect, values: Dict[str, List[tuple]]) -> bool:
     with conn_rs_data.cursor() as cur:
-        psycopg2.extras.execute_values(cur, sql_insert_ratings, values['ratings'])
-        psycopg2.extras.execute_values(cur, sql_insert_movies, values['movies'])
+        psycopg2.extras.execute_values(cur, settings.sql_insert_ratings, values['ratings'])
+        psycopg2.extras.execute_values(cur, settings.sql_insert_movies, values['movies'])
 
     conn_rs_data.commit()
 
@@ -121,7 +119,7 @@ def main():
     while True:
         try:
             time_now = time.time()
-            if time_now - time_start <= FLUSH_SECONDS:
+            if time_now - time_start <= settings.FLUSH_SECONDS:
                 continue
 
             logger.info('Начата выгрузка данных...')

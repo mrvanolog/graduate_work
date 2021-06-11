@@ -1,0 +1,70 @@
+version: '3.7'
+
+services:
+  api:
+    build: .
+    container_name: fast_api
+    depends_on:
+      - elasticsearch
+      - redis
+    restart: always
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    container_name: elastic
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    expose:
+      - 9200
+    restart: always
+
+  es_initializer:
+    container_name: es_initializer
+    build: ./conf/elastic
+    depends_on:
+      - elasticsearch
+
+  redis:
+    image: redis:latest
+    container_name: redis_cache
+    expose:
+      - 6379
+    depends_on:
+      - elasticsearch
+    restart: always
+
+  etl:
+    build: ./etl
+    container_name: etl
+    restart: always
+    depends_on:
+      - es_initializer
+      - postgres
+
+  postgres:
+    build: ./conf/postgres
+    container_name: postgres
+    restart: always
+    volumes:
+      - pg_data:/var/lib/postgresql/data/pgdata
+      - ./conf/postgres/init_db:/docker-entrypoint-initdb.d
+    expose:
+      - 5432
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_server
+    ports:
+      - 8000:80    # use free port
+    depends_on:
+      - api
+    volumes:
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./conf/nginx/fast_api/fast_api.conf:/etc/nginx/conf.d/fast_api.conf:ro
+    restart: always
+
+volumes:
+  elasticsearch_data:
+  pg_data:
