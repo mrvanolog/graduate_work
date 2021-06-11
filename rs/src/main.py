@@ -15,7 +15,7 @@ async def startup_event():
 logger = logging.getLogger('main')
 
 
-@app.get('rs/healthcheck', status_code=200)
+@app.get('/rs/healthcheck', status_code=200)
 async def health_check():
     return "I'm alive"
 
