@@ -10,7 +10,7 @@ POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 FLUSH_SECONDS = int(os.environ.get('FLUSH_SECONDS', default=1800))
 
 # templates
-columns_ratings = 'movie_id, user_id, rating, created_at'
+columns_ratings = 'user_id, movie_id, rating, created_at'
 columns_movies = """
     id,
     title,
