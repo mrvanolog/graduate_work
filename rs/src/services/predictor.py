@@ -40,9 +40,13 @@ class Predictor():
         return pd.DataFrame(result, columns=columns_movies)
 
     def unpersonalised_recommendation(self) -> list:
+        """Return a list of movies by their average rating.
+        """
         return self.movies.sort_values('rating', ascending=False)['id'].values.tolist()
 
     def predict_for_users(self):
+        """Create predictions for each user and upload them to rs-predictions db.
+        """
         recommendations: List[tuple] = []
         for user_id, group in self.ratings.groupby('user_id'):
             if group['user_id'].count() < 10:
@@ -61,6 +65,8 @@ class Predictor():
         self.conn_predictions.commit()
 
     def predict_for_movies(self):
+        """Create predictions for each movie and upload them to rs-predictions db.
+        """
         recommendations: List[tuple] = []
         for movie_id, group in self.ratings.groupby('movie_id'):
             if group['movie_id'].count() < 10:
