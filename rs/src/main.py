@@ -27,4 +27,4 @@ async def predict_for_users(predictor: Predictor = Depends(get_predictor)):
 
 @app.post('/rs/movies')
 async def predict_for_movies(predictor: Predictor = Depends(get_predictor)):
-    predictor.predict_for_movies
+    predictor.predict_for_movies()
