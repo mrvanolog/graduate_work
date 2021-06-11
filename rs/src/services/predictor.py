@@ -1,10 +1,14 @@
-import psycopg2
+from typing import List
 import pandas as pd
+import psycopg2
 
-from recommender.recommender import Recommender
+from conf.settings import (POSTGRES_HOST, POSTGRES_PASSWORD, POSTGRES_PORT,
+                           POSTGRES_USER, columns_movies, columns_ratings,
+                           sql_delete_movies, sql_delete_users,
+                           sql_insert_movies, sql_insert_users, sql_movies,
+                           sql_ratings)
 from recommender.collab_filter import CollabFilterRecommender
-from conf.settings import sql_ratings, sql_movies, columns_ratings, columns_movies
-from conf.settings import POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD
+from recommender.recommender import Recommender
 
 
 class Predictor():
@@ -39,24 +43,40 @@ class Predictor():
         pass
 
     def predict_for_users(self):
-        recommendations: dict = {}
+        recommendations: List[tuple] = []
         for user_id, group in self.ratings.groupby('user_id'):
             if group['user_id'].count() < 10:
-                self.unpersonalised_recommendation()
+                movies = self.unpersonalised_recommendation()
+            movies = self.cf_rec.predict_for_user(user_id)
 
-            recommendations[user_id] = self.cf_rec.predict_for_user(user_id)
+            recommendations.append((user_id, movies))
 
-            # TODO: upload recommendations to rs-predictions
+        with self.conn_predictions.cursor() as cur:
+            # delete old predictions
+            cur.execute(sql_delete_users)
+
+            # add new predictions
+            cur.execute(sql_insert_users, recommendations)
+
+        self.conn_predictions.commit()
 
     def predict_for_movies(self):
-        recommendations: dict = {}
+        recommendations: List[tuple] = []
         for movie_id, group in self.ratings.groupby('movie_id'):
             if group['movie_id'].count() < 10:
-                self.unpersonalised_recommendation()
+                movies = self.unpersonalised_recommendation()
+            movies = self.cf_rec.predict_for_movie(movie_id)
 
-            recommendations[movie_id] = self.cf_rec.predict_for_movie(movie_id)
+            recommendations.append((movie_id, movies))
 
-            # TODO: upload recommendations to rs-predictions
+        with self.conn_predictions.cursor() as cur:
+            # delete old predictions
+            cur.execute(sql_delete_movies)
+
+            # add new predictions
+            cur.execute(sql_insert_movies, recommendations)
+
+        self.conn_predictions.commit()
 
 
 def get_predictor():
@@ -78,4 +98,5 @@ def get_predictor():
         target_session_attrs=read-write
         sslmode=verify-full
     """)
+
     return Predictor(conn_data, conn_predictions)
