@@ -3,14 +3,13 @@ import pandas as pd
 import psycopg2.extras
 
 from conf.settings import (POSTGRES_HOST, POSTGRES_PASSWORD, POSTGRES_PORT,
+                           POSTGRES_DATA_DB, POSTGRES_PREDICTIONS_DB,
                            POSTGRES_USER, columns_movies, columns_ratings,
                            sql_delete_movies, sql_delete_users,
                            sql_insert_movies, sql_insert_users, sql_movies,
                            sql_ratings)
 from recommender.collab_filter import CollabFilterRecommender
 from recommender.recommender import Recommender
-
-from rs.src.conf.settings import POSTGRES_DATA_DB, POSTGRES_PREDICTIONS_DB
 
 
 class Predictor():
