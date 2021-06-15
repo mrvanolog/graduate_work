@@ -15,6 +15,22 @@ services:
     ports:
       - 8000:8000
 
+  rs-api:
+    build: rs_api
+    container_name: rs_api
+    environment:
+      POSTGRES_DB: $POSTGRES_PREDICTIONS_DB
+      POSTGRES_HOST: $POSTGRES_PREDICTIONS_HOST
+      POSTGRES_PORT: $POSTGRES_PREDICTIONS_PORT
+      POSTGRES_USER: $POSTGRES_PREDICTIONS_USER
+      POSTGRES_PASSWORD: $POSTGRES_PREDICTIONS_PASSWORD
+    depends_on:
+      - postgres
+      - init_postgres
+    restart: always
+    ports:
+      - 8888:8888
+
   rs:
     build: rs
     container_name: rs
