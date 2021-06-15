@@ -6,6 +6,7 @@ POSTGRES_HOST = os.environ.get('POSTGRES_HOST', default='rc1b-9g35diheb1pr3mvu.m
 POSTGRES_PORT = os.environ.get('POSTGRES_PORT', default='6432')
 POSTGRES_USER = os.environ.get('POSTGRES_USER', default='user_admin')
 POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', default='qwerty123')
+SSL_MODE = os.environ.get('SSL_MODE', default='disable')
 
 path_sql_data = Path().cwd().joinpath('init_db_data.sql')
 with path_sql_data.open('r') as f:
@@ -26,7 +27,7 @@ def init_data():
         user={POSTGRES_USER}
         password={POSTGRES_PASSWORD}
         target_session_attrs=read-write
-        sslmode=verify-full
+        sslmode={SSL_MODE}
     """)
 
     with conn.cursor() as cur:
@@ -48,7 +49,7 @@ def init_predictions():
         user={POSTGRES_USER}
         password={POSTGRES_PASSWORD}
         target_session_attrs=read-write
-        sslmode=verify-full
+        sslmode={SSL_MODE}
     """)
 
     with conn.cursor() as cur:

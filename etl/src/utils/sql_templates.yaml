@@ -1,0 +1,79 @@
+updated_person: >
+  SELECT id, updated_at
+  FROM content.person
+  WHERE updated_at > '{0}'
+  ORDER BY updated_at
+  LIMIT 100
+  OFFSET {1};
+
+updated_genre: >
+  SELECT id, updated_at
+  FROM content.genre
+  WHERE updated_at > '{0}'
+  ORDER BY updated_at
+  LIMIT 100
+  OFFSET {1};
+
+updated_film_work: >
+  SELECT id, updated_at
+  FROM content.film_work
+  WHERE updated_at > '{0}'
+  ORDER BY updated_at
+  LIMIT 100
+  OFFSET {1};
+
+film_work_for_updated_person: >
+  SELECT DISTINCT fw.id, fw.updated_at
+  FROM content.film_work fw
+  JOIN content.person_film_work pfw ON pfw.film_work_id = fw.id
+  WHERE fw.updated_at > '{0}' AND pfw.person_id IN ({1})
+  ORDER BY fw.updated_at
+  LIMIT 100
+  OFFSET {2};
+
+film_work_for_updated_genre: >
+  SELECT DISTINCT fw.id, fw.updated_at
+  FROM content.film_work fw
+  JOIN content.genre_film_work gfw ON gfw.film_work_id = fw.id
+  WHERE fw.updated_at > '{0}' AND gfw.genre_id IN ({1})
+  ORDER BY fw.updated_at
+  LIMIT 100
+  OFFSET {2};
+
+film_work_for_es: >
+  SELECT
+      fw.id as fw_id,
+      fw.title,
+      fw.description,
+      fw.rating,
+      fw.type,
+      fw.created_at,
+      fw.updated_at,
+      pfw.role,
+      p.id as p_id,
+      p.full_name,
+      g.id as g_id,
+      g.name
+  FROM content.film_work fw
+  LEFT JOIN content.person_film_work pfw ON pfw.film_work_id = fw.id
+  LEFT JOIN content.person p ON p.id = pfw.person_id
+  LEFT JOIN content.genre_film_work gfw ON gfw.film_work_id = fw.id
+  LEFT JOIN content.genre g ON g.id = gfw.genre_id
+  WHERE fw.id IN ({0});
+
+genre_for_es: >
+  SELECT
+    id,
+    name
+  FROM content.genre
+  WHERE id IN ({0});
+
+person_for_es: >
+  SELECT
+    p.id as p_id,
+    p.full_name,
+    pfw.role,
+    pfw.film_work_id as f_id
+  FROM content.person p
+  LEFT JOIN content.person_film_work pfw on pfw.person_id = p.id
+  WHERE p.id IN ({0});

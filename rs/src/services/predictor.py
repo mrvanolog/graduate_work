@@ -89,7 +89,7 @@ def get_predictor():
         user={settings.POSTGRES_DATA_USER}
         password={settings.POSTGRES_DATA_PASSWORD}
         target_session_attrs=read-write
-        sslmode=verify-full
+        sslmode={settings.SSL_MODE}
     """)
     conn_predictions = psycopg2.connect(f"""
         host={settings.POSTGRES_PREDICTIONS_HOST}
@@ -98,7 +98,7 @@ def get_predictor():
         user={settings.POSTGRES_PREDICTIONS_USER}
         password={settings.POSTGRES_PREDICTIONS_PASSWORD}
         target_session_attrs=read-write
-        sslmode=verify-full
+        sslmode={settings.SSL_MODE}
     """)
 
     return Predictor(conn_data, conn_predictions)

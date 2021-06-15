@@ -6,6 +6,8 @@ POSTGRES_HOST = os.environ.get('POSTGRES_HOST', default='rc1b-9g35diheb1pr3mvu.m
 POSTGRES_PORT = os.environ.get('POSTGRES_PORT', default='6432')
 POSTGRES_USER = os.environ.get('POSTGRES_USER', default='user_admin')
 POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', default='qwerty123')
+POSTGRES_MOVIES_DB = os.environ.get('POSTGRES_MOVIES_DB', default='movies')
+SSL_MODE = os.environ.get('SSL_MODE', default='disable')
 
 path_data = Path().cwd().joinpath('data')
 
@@ -40,7 +42,7 @@ def init_movies():
         user={POSTGRES_USER}
         password={POSTGRES_PASSWORD}
         target_session_attrs=read-write
-        sslmode=verify-full
+        sslmode={SSL_MODE}
     """)
 
     with conn.cursor() as cur:
@@ -73,7 +75,7 @@ def init_users():
         user={POSTGRES_USER}
         password={POSTGRES_PASSWORD}
         target_session_attrs=read-write
-        sslmode=verify-full
+        sslmode={SSL_MODE}
     """)
 
     with conn.cursor() as cur:
@@ -98,7 +100,7 @@ def init_ugc():
         user={POSTGRES_USER}
         password={POSTGRES_PASSWORD}
         target_session_attrs=read-write
-        sslmode=verify-full
+        sslmode={SSL_MODE}
     """)
 
     with conn.cursor() as cur:

@@ -13,6 +13,8 @@ POSTGRES_DATA_PORT = os.environ.get('POSTGRES_DATA_PORT')
 POSTGRES_DATA_USER = os.environ.get('POSTGRES_DATA_USER')
 POSTGRES_DATA_PASSWORD = os.environ.get('POSTGRES_DATA_PASSWORD')
 
+SSL_MODE = os.environ.get('SSL_MODE')
+
 # SQL
 sql_ratings = 'SELECT movie_id, user_id, rating FROM rs_data.ratings'
 columns_ratings = ['movie_id', 'user_id', 'rating']

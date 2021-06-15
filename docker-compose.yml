@@ -2,12 +2,64 @@ version: '3.7'
 
 services:
   api:
-    build: .
+    build: async_api
     container_name: fast_api
+    environment:
+      ELASTICSEARCH_HOSTS: $ELASTIC_HOST
+      REDIS_HOST: $REDIS_HOST
+      REDIS_PASSWORD: $REDIS_PASSWORD
     depends_on:
       - elasticsearch
       - redis
     restart: always
+    ports:
+      - 8000:8000
+
+  rs:
+    build: rs
+    container_name: rs
+    environment:
+      POSTGRES_DATA_DB: $POSTGRES_DATA_DB
+      POSTGRES_DATA_HOST: $POSTGRES_DATA_HOST
+      POSTGRES_DATA_PORT: $POSTGRES_DATA_PORT
+      POSTGRES_DATA_USER: $POSTGRES_DATA_USER
+      POSTGRES_DATA_PASSWORD: $POSTGRES_DATA_PASSWORD
+      POSTGRES_PREDICTIONS_DB: $POSTGRES_PREDICTIONS_DB
+      POSTGRES_PREDICTIONS_HOST: $POSTGRES_PREDICTIONS_HOST
+      POSTGRES_PREDICTIONS_PORT: $POSTGRES_PREDICTIONS_PORT
+      POSTGRES_PREDICTIONS_USER: $POSTGRES_PREDICTIONS_USER
+      POSTGRES_PREDICTIONS_PASSWORD: $POSTGRES_PREDICTIONS_PASSWORD
+      SSL_MODE: $SSL_MODE
+    restart: always
+    ports:
+      - 8080:8080
+
+  rs_etl:
+    build: rs_etl
+    container_name: rs_etl
+    restart: always
+    environment:
+      POSTGRES_MOVIES_DB: $POSTGRES_MOVIES_DB
+      POSTGRES_MOVIES_HOST: $POSTGRES_MOVIES_HOST
+      POSTGRES_MOVIES_PORT: $POSTGRES_MOVIES_PORT
+      POSTGRES_MOVIES_USER: $POSTGRES_MOVIES_USER
+      POSTGRES_MOVIES_PASSWORD: $POSTGRES_MOVIES_PASSWORD
+
+      POSTGRES_UGC_DB: $POSTGRES_UGC_DB
+      POSTGRES_UGC_HOST: $POSTGRES_UGC_HOST
+      POSTGRES_UGC_PORT: $POSTGRES_UGC_PORT
+      POSTGRES_UGC_USER: $POSTGRES_UGC_USER
+      POSTGRES_UGC_PASSWORD: $POSTGRES_UGC_PASSWORD
+
+      POSTGRES_DATA_DB: $POSTGRES_DATA_DB
+      POSTGRES_DATA_HOST: $POSTGRES_DATA_HOST
+      POSTGRES_DATA_PORT: $POSTGRES_DATA_PORT
+      POSTGRES_DATA_USER: $POSTGRES_DATA_USER
+      POSTGRES_DATA_PASSWORD: $POSTGRES_DATA_PASSWORD
+      SSL_MODE: $SSL_MODE
+    depends_on:
+      - es_initializer
+      - postgres
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
@@ -22,9 +74,27 @@ services:
 
   es_initializer:
     container_name: es_initializer
-    build: ./conf/elastic
+    build: ./elastic
     depends_on:
       - elasticsearch
+
+  etl:
+    build: etl
+    container_name: etl
+    environment:
+      POSTGRES_DB: $POSTGRES_MOVIES_DB
+      POSTGRES_HOST: $POSTGRES_MOVIES_HOST
+      POSTGRES_PORT: $POSTGRES_MOVIES_PORT
+      POSTGRES_USER: $POSTGRES_MOVIES_USER
+      POSTGRES_PASSWORD: $POSTGRES_MOVIES_PASSWORD
+      SSL_MODE: $SSL_MODE
+      ELASTIC_HOST: $ELASTIC_HOST
+      REDIS_HOST: $REDIS_HOST
+      REDIS_PASSWORD: $REDIS_PASSWORD
+    restart: always
+    depends_on:
+      - es_initializer
+      - postgres
 
   redis:
     image: redis:latest
@@ -35,35 +105,28 @@ services:
       - elasticsearch
     restart: always
 
-  etl:
-    build: ./etl
-    container_name: etl
-    restart: always
-    depends_on:
-      - es_initializer
-      - postgres
-
   postgres:
-    build: ./conf/postgres
-    container_name: postgres
+    image: postgres:12.1
     restart: always
     volumes:
-      - pg_data:/var/lib/postgresql/data/pgdata
-      - ./conf/postgres/init_db:/docker-entrypoint-initdb.d
+      - pg_data:/var/lib/postgresql/data
+      - ./postgres_init:/docker-entrypoint-initdb.d
     expose:
       - 5432
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx_server
-    ports:
-      - 8000:80    # use free port
+  init_postgres:
+    build: db
+    container_name: init_postgres
+    environment:
+      POSTGRES_HOST: $POSTGRES_MOVIES_HOST
+      POSTGRES_PORT: $POSTGRES_MOVIES_PORT
+      POSTGRES_USER: $POSTGRES_MOVIES_USER
+      POSTGRES_PASSWORD: $POSTGRES_MOVIES_PASSWORD
+      POSTGRES_MOVIES_DB: $POSTGRES_MOVIES_DB
+      SSL_MODE: $SSL_MODE
     depends_on:
-      - api
-    volumes:
-      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./conf/nginx/fast_api/fast_api.conf:/etc/nginx/conf.d/fast_api.conf:ro
-    restart: always
+      - postgres
+
 
 volumes:
   elasticsearch_data:

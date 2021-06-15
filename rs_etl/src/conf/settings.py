@@ -19,6 +19,8 @@ POSTGRES_DATA_PORT = os.environ.get('POSTGRES_DATA_PORT')
 POSTGRES_DATA_USER = os.environ.get('POSTGRES_DATA_USER')
 POSTGRES_DATA_PASSWORD = os.environ.get('POSTGRES_DATA_PASSWORD')
 
+SSL_MODE = os.environ.get('SSL_MODE')
+
 # flush time
 FLUSH_SECONDS = int(os.environ.get('FLUSH_SECONDS', default=1800))
 
