@@ -1,0 +1,28 @@
+version: 1
+formatters:
+  default:
+    format: "[%(asctime)s]\t[%(name)s]\t[%(levelname)s]\t%(message)s"
+    datefmt: "%H:%M:%S"
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: default
+    stream: ext://sys.stdout
+  file:
+    class : logging.FileHandler
+    formatter: default
+    filename: psgrs_to_es.log
+loggers:
+  main:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+  esloader:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+  etl:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False

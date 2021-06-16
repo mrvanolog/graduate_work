@@ -2,11 +2,7 @@ from typing import List
 import pandas as pd
 import psycopg2.extras
 
-from conf.settings import (POSTGRES_HOST, POSTGRES_PASSWORD, POSTGRES_PORT,
-                           POSTGRES_USER, columns_movies, columns_ratings,
-                           sql_delete_movies, sql_delete_users,
-                           sql_insert_movies, sql_insert_users, sql_movies,
-                           sql_ratings)
+from conf import settings
 from recommender.collab_filter import CollabFilterRecommender
 from recommender.recommender import Recommender
 
@@ -25,19 +21,19 @@ class Predictor():
         """Create DataFrame for ratings data from postgres.
         """
         with self.conn_data.cursor() as cur:
-            cur.execute(sql_ratings)
+            cur.execute(settings.sql_ratings)
             result = cur.fetchall()
 
-        return pd.DataFrame(result, columns=columns_ratings)
+        return pd.DataFrame(result, columns=settings.columns_ratings)
 
     def _get_movies_data(self) -> pd.DataFrame:
         """Create DataFrame for movies data from postgres.
         """
         with self.conn_data.cursor() as cur:
-            cur.execute(sql_movies)
+            cur.execute(settings.sql_movies)
             result = cur.fetchall()
 
-        return pd.DataFrame(result, columns=columns_movies)
+        return pd.DataFrame(result, columns=settings.columns_movies)
 
     def unpersonalised_recommendation(self) -> list:
         """Return a list of movies by their average rating.
@@ -57,10 +53,10 @@ class Predictor():
 
         with self.conn_predictions.cursor() as cur:
             # delete old predictions
-            cur.execute(sql_delete_users)
+            cur.execute(settings.sql_delete_users)
 
             # add new predictions
-            psycopg2.extras.execute_values(cur, sql_insert_users, recommendations)
+            psycopg2.extras.execute_values(cur, settings.sql_insert_users, recommendations)
 
         self.conn_predictions.commit()
 
@@ -77,32 +73,32 @@ class Predictor():
 
         with self.conn_predictions.cursor() as cur:
             # delete old predictions
-            cur.execute(sql_delete_movies)
+            cur.execute(settings.sql_delete_movies)
 
             # add new predictions
-            psycopg2.extras.execute_values(cur, sql_insert_movies, recommendations)
+            psycopg2.extras.execute_values(cur, settings.sql_insert_movies, recommendations)
 
         self.conn_predictions.commit()
 
 
 def get_predictor():
     conn_data = psycopg2.connect(f"""
-        host={POSTGRES_HOST}
-        port={POSTGRES_PORT}
-        dbname=rs-data
-        user={POSTGRES_USER}
-        password={POSTGRES_PASSWORD}
+        host={settings.POSTGRES_DATA_HOST}
+        port={settings.POSTGRES_DATA_PORT}
+        dbname={settings.POSTGRES_DATA_DB}
+        user={settings.POSTGRES_DATA_USER}
+        password={settings.POSTGRES_DATA_PASSWORD}
         target_session_attrs=read-write
-        sslmode=verify-full
+        sslmode={settings.SSL_MODE}
     """)
     conn_predictions = psycopg2.connect(f"""
-        host={POSTGRES_HOST}
-        port={POSTGRES_PORT}
-        dbname=rs-predictions
-        user={POSTGRES_USER}
-        password={POSTGRES_PASSWORD}
+        host={settings.POSTGRES_PREDICTIONS_HOST}
+        port={settings.POSTGRES_PREDICTIONS_PORT}
+        dbname={settings.POSTGRES_PREDICTIONS_DB}
+        user={settings.POSTGRES_PREDICTIONS_USER}
+        password={settings.POSTGRES_PREDICTIONS_PASSWORD}
         target_session_attrs=read-write
-        sslmode=verify-full
+        sslmode={settings.SSL_MODE}
     """)
 
     return Predictor(conn_data, conn_predictions)

@@ -1,17 +1,9 @@
-FROM python:3.9
-ENV POSTGRES_USER=user_admin \
-    POSTGRES_PASSWORD=qwerty123 \
-    POSTGRES_HOST=rc1b-9g35diheb1pr3mvu.mdb.yandexcloud.net \
-    POSTGRES_PORT=6432
-# install certificate for yandex cloud
-RUN mkdir -p ~/.postgresql && \
-    wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" -O ~/.postgresql/root.crt && \
-    chmod 0600 ~/.postgresql/root.crt
-# install requirements
+FROM python:3
+ENV PYTHONUNBUFFERED=1 \
+    ES_URL=http://elasticsearch:9200 \
+    ETL_FIRST_RUN=True
 WORKDIR /src
 COPY requirements.txt requirements.txt
-RUN python -m pip install --upgrade pip
-RUN python -m pip install --no-cache-dir -r requirements.txt
-# start script
+RUN python -m pip install --upgrade pip && python -m pip install -r requirements.txt
 COPY /src .
-CMD python -m main
+CMD ["python3", "main.py"]
