@@ -1,3 +1,5 @@
+include deploy/.env
+
 ETL_IMAGE=cr.yandex/crpeniun2041jirjgthk/etl:latest
 ES_INITIALIZER_IMAGE=cr.yandex/crpeniun2041jirjgthk/es_initializer:latest
 ASYNC_API_IMAGE=cr.yandex/crpeniun2041jirjgthk/asyncapi:latest
@@ -54,6 +56,7 @@ run build-n-run:
 	RS_IMAGE=${RS_IMAGE} \
 	RS_ETL_IMAGE=${RS_ETL_IMAGE} \
 	SSL_MODE=${SSL_MODE} \
+	SECRET_KEY=${SECRET_KEY} \
 	$(RUN_DOCKER)
 
 

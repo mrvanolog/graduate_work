@@ -15,7 +15,13 @@ class UserPredictions(BaseModel):
     user_id: str
     rec_movie_id: List[str]
 
+    class Config:
+        orm_mode = True
+
 
 class MoviePredictions(BaseModel):
     movie_id: str
     rec_movie_id: List[str]
+
+    class Config:
+        orm_mode = True

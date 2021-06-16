@@ -10,5 +10,8 @@ class Settings(BaseSettings):
     postgres_user: str
     postgres_password: str
 
+    secret_key: str
+    algorithm: str = 'HS256'
+
 
 settings = Settings()
