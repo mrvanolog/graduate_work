@@ -45,9 +45,9 @@ class Predictor():
         """
         recommendations: List[tuple] = []
         for user_id, group in self.ratings.groupby('user_id'):
+            movies = self.cf_rec.predict_for_user(user_id)
             if group['user_id'].count() < 10:
                 movies = self.unpersonalised_recommendation()
-            movies = self.cf_rec.predict_for_user(user_id)
 
             recommendations.append((user_id, movies))
 
@@ -65,9 +65,9 @@ class Predictor():
         """
         recommendations: List[tuple] = []
         for movie_id, group in self.ratings.groupby('movie_id'):
+            movies = self.cf_rec.predict_for_movie(movie_id)
             if group['movie_id'].count() < 10:
                 movies = self.unpersonalised_recommendation()
-            movies = self.cf_rec.predict_for_movie(movie_id)
 
             recommendations.append((movie_id, movies))
 
