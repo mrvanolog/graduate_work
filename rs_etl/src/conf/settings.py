@@ -22,7 +22,7 @@ POSTGRES_DATA_PASSWORD = os.environ.get('POSTGRES_DATA_PASSWORD')
 SSL_MODE = os.environ.get('SSL_MODE')
 
 # flush time
-FLUSH_SECONDS = int(os.environ.get('FLUSH_SECONDS', default=1800))
+FLUSH_SECONDS = int(os.environ.get('FLUSH_SECONDS', default=60))
 
 # templates
 columns_ratings = 'user_id, movie_id, rating, created_at'
@@ -39,11 +39,11 @@ columns_movies = """
     updated_at
 """
 
-sql_insert_ratings = """
-INSERT INTO rs_data.ratings (user_id, movie_id, rating, created_at)
+sql_insert_ratings = f"""
+INSERT INTO "{POSTGRES_DATA_DB}.ratings" (user_id, movie_id, rating, created_at)
 VALUES %s
 """
-sql_insert_movies = """
-INSERT INTO rs_data.movies (id, title, rating, type, created_at, updated_at)
+sql_insert_movies = f"""
+INSERT INTO "{POSTGRES_DATA_DB}.movies" (id, title, rating, type, created_at, updated_at)
 VALUES %s
 """

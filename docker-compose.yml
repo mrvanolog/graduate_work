@@ -125,6 +125,9 @@ services:
   postgres:
     image: postgres:12.1
     restart: always
+    environment:
+      POSTGRES_USER: $POSTGRES_MOVIES_USER
+      POSTGRES_PASSWORD: $POSTGRES_MOVIES_PASSWORD
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./postgres_init:/docker-entrypoint-initdb.d
@@ -134,6 +137,7 @@ services:
   init_postgres:
     build: db
     container_name: init_postgres
+    restart: on-failure
     environment:
       POSTGRES_HOST: $POSTGRES_MOVIES_HOST
       POSTGRES_PORT: $POSTGRES_MOVIES_PORT

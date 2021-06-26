@@ -1,6 +1,12 @@
-CREATE SCHEMA IF NOT EXISTS content;
+CREATE DATABASE movies;
+ALTER DATABASE movies OWNER TO postgres;
 
-CREATE TABLE IF NOT EXISTS content.film_work (
+\c movies;
+
+CREATE SCHEMA content;
+ALTER SCHEMA content OWNER TO postgres;
+
+CREATE TABLE content.film_work (
     id uuid NOT NULL,
     title text NOT NULL,
     description text,
@@ -13,7 +19,9 @@ CREATE TABLE IF NOT EXISTS content.film_work (
     updated_at timestamp with time zone
 );
 
-CREATE TABLE IF NOT EXISTS content.genre (
+ALTER TABLE content.film_work OWNER TO postgres;
+
+CREATE TABLE content.genre (
     id uuid NOT NULL,
     name text NOT NULL,
     description text,
@@ -21,14 +29,18 @@ CREATE TABLE IF NOT EXISTS content.genre (
     updated_at timestamp with time zone
 );
 
-CREATE TABLE IF NOT EXISTS content.genre_film_work (
+ALTER TABLE content.genre OWNER TO postgres;
+
+CREATE TABLE content.genre_film_work (
     id uuid NOT NULL,
     film_work_id uuid NOT NULL,
     genre_id uuid NOT NULL,
     created_at timestamp with time zone
 );
 
-CREATE TABLE IF NOT EXISTS content.person (
+ALTER TABLE content.genre_film_work OWNER TO postgres;
+
+CREATE TABLE content.person (
     id uuid NOT NULL,
     full_name text NOT NULL,
     birth_date date,
@@ -36,10 +48,14 @@ CREATE TABLE IF NOT EXISTS content.person (
     updated_at timestamp with time zone
 );
 
-CREATE TABLE IF NOT EXISTS content.person_film_work (
+ALTER TABLE content.person OWNER TO postgres;
+
+CREATE TABLE content.person_film_work (
     id uuid NOT NULL,
     film_work_id uuid NOT NULL,
     person_id uuid NOT NULL,
     role text NOT NULL,
     created_at timestamp with time zone
 );
+
+ALTER TABLE content.person_film_work OWNER TO postgres;
