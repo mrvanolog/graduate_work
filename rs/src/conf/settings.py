@@ -23,7 +23,7 @@ columns_movies = ['id', 'rating']
 
 sql_delete_users = f'DELETE FROM "{POSTGRES_PREDICTIONS_DB}".users'
 sql_insert_users = f"""
-INSERT INTO "{POSTGRES_PREDICTIONS_DB}.users" (user_id, rec_movie_id)
+INSERT INTO "{POSTGRES_PREDICTIONS_DB}".users (user_id, rec_movie_id)
 VALUES %s
 """
 

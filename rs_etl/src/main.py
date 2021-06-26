@@ -12,7 +12,7 @@ from conf.utils import backoff
 set_up_logging()
 logger = logging.getLogger("main")
 
-DATE_FILTER: datetime = datetime(2021, 6, 11, 17, 17)
+DATE_FILTER: datetime = datetime(2019, 6, 11, 17, 17)
 
 
 @backoff('ugc')
@@ -74,6 +74,7 @@ def extract(conn_ugc: psycopg2._connect, conn_movies: psycopg2._connect) -> Dict
             WHERE created_at >= '{date_filter}'
         """)
         result['ratings'] = cur.fetchall()
+    logger.info(f"Выгружено movies {len(result['ratings'])}")
 
     with conn_movies.cursor() as cur:
         cur.execute(f"""
@@ -82,7 +83,7 @@ def extract(conn_ugc: psycopg2._connect, conn_movies: psycopg2._connect) -> Dict
             WHERE updated_at >= '{date_filter}'
         """)
         result['movies'] = cur.fetchall()
-
+    logger.info(f"Выгружено movies {len(result['movies'])}")
     return result
 
 

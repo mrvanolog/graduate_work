@@ -40,10 +40,10 @@ columns_movies = """
 """
 
 sql_insert_ratings = f"""
-INSERT INTO "{POSTGRES_DATA_DB}.ratings" (user_id, movie_id, rating, created_at)
+INSERT INTO "{POSTGRES_DATA_DB}".ratings (user_id, movie_id, rating, created_at)
 VALUES %s
 """
 sql_insert_movies = f"""
-INSERT INTO "{POSTGRES_DATA_DB}.movies" (id, title, rating, type, created_at, updated_at)
+INSERT INTO "{POSTGRES_DATA_DB}".movies (id, title, rating, type, created_at, updated_at)
 VALUES %s
 """
