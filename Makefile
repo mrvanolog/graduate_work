@@ -4,7 +4,8 @@ ETL_IMAGE=cr.yandex/crpeniun2041jirjgthk/etl:latest
 ES_INITIALIZER_IMAGE=cr.yandex/crpeniun2041jirjgthk/es_initializer:latest
 ASYNC_API_IMAGE=cr.yandex/crpeniun2041jirjgthk/asyncapi:latest
 RS_IMAGE=cr.yandex/crpeniun2041jirjgthk/rs_inner_api:latest
-RS_ETL_IMAGE=cr.yandex/crpeniun2041jirjgthk/rs_etl
+RS_ETL_IMAGE=cr.yandex/crpeniun2041jirjgthk/rs_etl:latest
+RS_API_IMAGE=cr.yandex/crpeniun2041jirjgthk/rs_api:latest
 
 ifndef ENV
 ENV = dev
@@ -57,6 +58,7 @@ run build-n-run:
 	RS_ETL_IMAGE=${RS_ETL_IMAGE} \
 	SSL_MODE=${SSL_MODE} \
 	SECRET_KEY=${SECRET_KEY} \
+	RS_API_IMAGE=${RS_API_IMAGE} \
 	$(RUN_DOCKER)
 
 

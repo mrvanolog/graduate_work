@@ -2,7 +2,8 @@ ETL_IMAGE=cr.yandex/crpeniun2041jirjgthk/etl:latest
 ES_INITIALIZER_IMAGE=cr.yandex/crpeniun2041jirjgthk/es_initializer:latest
 ASYNC_API_IMAGE=cr.yandex/crpeniun2041jirjgthk/asyncapi:latest
 RS_IMAGE=cr.yandex/crpeniun2041jirjgthk/rs_inner_api:latest
-RS_ETL_IMAGE=cr.yandex/crpeniun2041jirjgthk/rs_etl
+RS_ETL_IMAGE=cr.yandex/crpeniun2041jirjgthk/rs_etl:latest
+RS_API_IMAGE=cr.yandex/crpeniun2041jirjgthk/rs_api:latest
 
 ENV = prod
 
@@ -10,8 +11,12 @@ SECRETS_DIR=secrets/${ENV}
 
 include $(SECRETS_DIR)/.env
 
+ifeq (${ENV}, dev)
+COMPOSE_FILES=-f docker-compose.yml
+else
 COMPOSE_FILES=-f docker-compose.prod.yml
 REDIS_HOST=$(shell redis-cli -h rc1a-f3ms9phcasixnqw8.mdb.yandexcloud.net -p 26379 sentinel get-master-addr-by-name redis106 | head -n 1)
+endif
 
 
 build-n-run: RUN_DOCKER=docker-compose ${COMPOSE_FILES} up --build
@@ -47,6 +52,9 @@ run build-n-run:
 	ES_INITIALIZER_IMAGE=${ES_INITIALIZER_IMAGE} \
 	RS_IMAGE=${RS_IMAGE} \
 	RS_ETL_IMAGE=${RS_ETL_IMAGE} \
+	SSL_MODE=${SSL_MODE} \
+	RS_API_IMAGE=${RS_API_IMAGE} \
+	SECRET_KEY=${SECRET_KEY} \
 	$(RUN_DOCKER)
 
 

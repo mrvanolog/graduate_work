@@ -33,6 +33,20 @@ services:
     ports:
       - 8080:8080
 
+  rs-api:
+    image: ${RS_API_IMAGE}
+    container_name: rs_api
+    environment:
+      POSTGRES_DB: $POSTGRES_PREDICTIONS_DB
+      POSTGRES_HOST: $POSTGRES_PREDICTIONS_HOST
+      POSTGRES_PORT: $POSTGRES_PREDICTIONS_PORT
+      POSTGRES_USER: $POSTGRES_PREDICTIONS_USER
+      POSTGRES_PASSWORD: $POSTGRES_PREDICTIONS_PASSWORD
+      SECRET_KEY: $SECRET_KEY
+    restart: always
+    ports:
+      - 8888:8888
+
   rs-etl:
     image: ${RS_ETL_IMAGE}
     container_name: rs_etl
